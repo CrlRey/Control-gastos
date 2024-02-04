@@ -1,34 +1,109 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react'
+import Header from './components/Header'
+import ListadoGastos from './components/ListadoGasto';
+import Modal from './components/Modal';
+import IconoNuevoGasto from './img/nuevo-gasto.svg'
+import {generarId} from './helpers/index'
+
+
+
+
+/* Siempre que se va a reutilizar un componente se debe de crear desde el App.jsx*/
 
 function App() {
-  const [count, setCount] = useState(0)
+  
+  const [presupuesto, setPresupuesto] = useState(0);
+  const [gastos, setGastos] = useState([]);
+
+  // Mostrar la siguiente pantalla
+  const [isValidPresupuesto, setIsValidPresupuesto] = useState(false);
+
+  const [animarModal, setAnimarModal] = useState(false);
+
+  // Mostrar el modal
+  const [modal, setModal] = useState(false);
+
+  // Editar lo que se tiene al modal
+  const [gastosEditar, setGastosEditar] = useState({});
+
+  useEffect(() => {
+    if(Object.keys(gastosEditar).length > 0){
+      setModal(true)  
+      setAnimarModal(true)
+  
+      setTimeout( () => {
+      }, 300) 
+    }
+  }, [gastosEditar]);
+
+
+
+  const handleNuevoGasto = () => {
+    setModal(true)  
+    setAnimarModal(true)
+    setGastosEditar({})
+
+    setTimeout( () => {
+    }, 300) 
+  }
+
+  const guardarGastos = gasto => {
+    if (gasto.id) {
+      // Actualizar
+      const gastosActualziados = gastos.map( gastoState => gastoState.id === gasto.id ? gasto : gastoState)
+
+      setGastos(gastosActualziados)
+    } else {
+      // Nuevo Gasto
+    gasto.id = generarId(); 
+    gasto.fecha = Date.now()
+    setGastos([...gastos, gasto])
+    }
+
+    
+
+    setAnimarModal(false)
+    
+    setTimeout(() => {
+        setModal(false)
+    }, 500);  
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className={modal ? 'fijar' : null}>
+      <Header
+      gastos={gastos}
+      presupuesto={presupuesto}
+      setPresupuesto={setPresupuesto}
+      isValidPresupuesto={isValidPresupuesto}
+      setIsValidPresupuesto={setIsValidPresupuesto}
+      />
+      
+      {isValidPresupuesto && (
+      <>
+      <main>
+        <ListadoGastos
+        setGastosEditar={setGastosEditar} 
+          gastos={gastos}
+        
+        />
+      </main>
+        <div className='nuevo-gasto'>
+            <img src={IconoNuevoGasto} alt="icono nuevo gasto" onClick={handleNuevoGasto}/>
+        </div>
+      </>
+      )}
+
+      {modal && <Modal
+      
+      gastosEditar={gastosEditar}
+      setModal={setModal}
+      animarModal={animarModal}
+      setAnimarModal={setAnimarModal}
+      guardarGastos={guardarGastos}
+      />}
+      
+    </div>
   )
 }
 

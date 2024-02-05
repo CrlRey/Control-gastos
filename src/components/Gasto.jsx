@@ -20,7 +20,7 @@ const srcIconos = {
     Suscripciones : IconoSuscripciones,
 }
 
-const Gasto = ({gasto, setGastosEditar}) => {
+const Gasto = ({gasto, setGastosEditar, eliminarGasto}) => {
 
     const {categoria, cantidad, nombre, fecha, id} = gasto
 
@@ -37,7 +37,9 @@ const Gasto = ({gasto, setGastosEditar}) => {
 
     const trailingActions= () => (
       <TrailingActions>
-        <SwipeAction onClick={() => {}}>
+        <SwipeAction onClick={() => {eliminarGasto(id)}}
+        destructive={true}
+        >
           Borrar
         </SwipeAction>
       </TrailingActions>

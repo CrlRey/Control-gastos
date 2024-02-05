@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-
-const ControlPresupuesto = ({gastos, presupuesto}) => {
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import 'react-circular-progressbar/dist/styles.css';
+const ControlPresupuesto = ({gastos, presupuesto, setPresupuesto, setGastos, setIsValidPresupuesto}) => {
 
     const [disponible, setDisponible] = useState(0);
     const [gastado, setGastado] = useState(0);
+
+    const [porcentaje, setPorcentaje] = useState(0);
 
 
 
@@ -13,6 +16,13 @@ const ControlPresupuesto = ({gastos, presupuesto}) => {
 
         // Calcular lo disponible
         const totalDisponible = presupuesto - totalGastado
+
+        //Calcular el porcentaje gastado
+
+        const nuevoPorcentaje = (( (presupuesto - totalDisponible) / presupuesto ) * 100).toFixed(2);
+        setTimeout(() => {
+            setPorcentaje(nuevoPorcentaje) 
+        }, 1500);
         setGastado(totalGastado)
         setDisponible(totalDisponible)
     }, [gastos]);
@@ -24,17 +34,37 @@ const ControlPresupuesto = ({gastos, presupuesto}) => {
     })
   }
 
+  const handleResetApp = () => {
+    const respuesta = confirm('¿Deseas eliminar los gastos?');
+    if (respuesta) {
+     setGastos([])
+     setPresupuesto(0)
+     setIsValidPresupuesto(false)   
+    }
+  }
+
   return (
     <div className='contenedor-presupuesto contenedor sombra dos-columnas'>
         <div>
-            <p>Grafica aqui</p>
+            <CircularProgressbar
+            styles={buildStyles({
+                pathColor: porcentaje > 100 ? '#DC2626' : '#3B82F6',
+                trailColor: '#F5F5F5',
+                textColor: porcentaje > 100 ? '#DC2626' : '#3B82F6'
+            })}
+            value={porcentaje}
+            text={`${porcentaje}% Gastado`}
+            />  
         </div>
 
         <div className='contenido-presupuesto'>
+            <button className='reset-app' type='button' onClick={handleResetApp}>
+                ELIMINAR REGISTROS
+            </button>
             <p>
                 <span>Presupuesto:</span>{formatearCantidad(presupuesto)}
             </p>
-            <p>
+            <p className={`${disponible < 0 ? 'negativo' : ''}`}>
                 <span>Disponible:</span>{formatearCantidad(disponible)}
             </p>
             <p>

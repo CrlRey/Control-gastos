@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import Header from './components/Header'
-import Filtros from './components/Filtros.JSX'; 
+import Filtros from './components/Filtros'; 
 import ListadoGastos from './components/ListadoGasto';
 import Modal from './components/Modal';
 import IconoNuevoGasto from './img/nuevo-gasto.svg'
